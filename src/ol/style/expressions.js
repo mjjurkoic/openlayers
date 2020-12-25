@@ -4,6 +4,7 @@
  */
 
 import {asArray, isStringColor} from '../color.js';
+import { hasArea } from '../size.js';
 
 /**
  * Base type used for literal style parameters; can be a number literal or the output of an operator,
@@ -786,3 +787,29 @@ Operators['case'] = {
     return result;
   },
 };
+Operators['has'] = {
+  getReturnType: function (args) {
+    return ValueTypes.BOOLEAN
+  },
+  toGlsl: function (context, args) {
+    assertArgsMinCount(args, 2);
+    assertArgsMaxCount(args, 3);
+    assertString(args[1]);
+
+    const needle = args[1];
+    let haystack = context.attributes;
+    for (let i = 0; i < haystack.length; i++) {
+      if (haystack[i].split('_')[1] === needle) {
+        return `(true)`;
+      }
+    }
+    haystack = context.variables;
+    for (let i = 0; i < haystack.length; i++) {
+      if (haystack[i].split('_')[1] === needle) {
+        return `(true)`;
+      }
+    }
+
+    return `(false)`;
+  }
+}
