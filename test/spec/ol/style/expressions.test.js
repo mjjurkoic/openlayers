@@ -1072,4 +1072,26 @@ describe('ol.style.expressions', function () {
       );
     });
   });
+
+  describe('has expressions', function () {
+    let context;
+
+    beforeEach(function () {
+      context = {
+        variables: [],
+        attributes: ['a_foo'],
+        stringLiteralsMap: {},
+      };
+    });
+
+    it('correctly returns true when the given variable name could be used to obtain a value when used in a get expression', function () {
+      const expression = ['has', 'foo'];
+      expect(expressionToGlsl(context, expression)).to.eql(`(true)`);
+    });
+
+    it('correctly returns false when the given variable name could not be used to obtain a value with when used in a get expression', function () {
+      const expression = ['has', 'bar'];
+      expect(expressionToGlsl(context, expression)).to.eql(`(false)`);
+    });
+  });
 });
