@@ -786,3 +786,43 @@ Operators['case'] = {
     return result;
   },
 };
+Operators['at'] = {
+  getReturnType: function (args) {
+    // The only accepted array types are expressions or number arrays, and this
+    // operator won't work on expressions.
+    return ValueTypes.NUMBER;
+  },
+  toGlsl: function (context, args) {
+    assertArgsCount(args, 2);
+    assertNumber(args[0]);
+    assertNumbers(args[1]);
+
+    const index = /** @type {Number} */ (args[0]);
+    const array = /** @type {Array} */ (args[1]);
+
+    // Check to see whether the second arg is a raw array or an array
+    // expression, and process accordingly.
+    if (typeof args[1][0] === 'string') {
+      if (index >= array.length - 1) {
+        throw new Error(
+          `Index ${index} is out of bounds for array ${array}`
+        );
+      }
+      let component;
+      switch (index) {
+        case 0: component = 'x';
+        case 1: component = 'y';
+        case 2: component = 'z';
+        case 3: component = 'w';
+      }
+      return `${expressionToGlsl(context, array)}.${component}`;
+    } else {
+      if (index >= array.length) {
+        throw new Error(
+          `Index ${index} is out of bounds for array ${array}`
+        );
+      }
+      return expressionToGlsl(context, array[index]);
+    }
+  }
+}

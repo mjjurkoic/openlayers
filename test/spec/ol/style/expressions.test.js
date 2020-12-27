@@ -1072,4 +1072,48 @@ describe('ol.style.expressions', function () {
       );
     });
   });
+
+  describe('at expression', function () {
+    let context;
+
+    beforeEach(function () {
+      context = {
+        variables: [],
+        attributes: [],
+        stringLiteralsMap: {},
+      };
+    });
+
+    it('obtains the correct value from an array given by an array expression', function () {
+      const expression = ['at', 1, ['array', 1, 2, 3]];
+      expect(expressionToGlsl(context, expression)).to.eql('vec3(1, 2, 3).y');
+    });
+
+    it('obtains the correct value from a raw array of numbers', function () {
+      const expression = ['at', 1, [1, 2, 3]];
+      expect(expressionToGlsl(context, expression)).to.eql('2.0');
+    });
+
+    it('correctly throws an error indicating that the given index is out of bounds for the given array expression', function () {
+      const expression = ['at', 4, ['array', 1, 2, 3, 4]];
+      let thrown = false;
+      try {
+        expressionToGlsl(context, expression);
+      } catch (e) {
+        thrown = true;
+      }
+      expect(thrown).to.be(true);
+    });
+
+    it('correctly throws an error indicating that the given index is out of bounds for the given raw array', function () {
+      const expression = ['at', 4, [1, 2, 3, 4]];
+      let thrown = false;
+      try {
+        expressionToGlsl(context, expression);
+      } catch (e) {
+        thrown = true;
+      }
+      expect(thrown).to.be(true);
+    });
+  });
 });
