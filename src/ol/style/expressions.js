@@ -792,11 +792,10 @@ Operators['has'] = {
     return ValueTypes.BOOLEAN
   },
   toGlsl: function (context, args) {
-    assertArgsMinCount(args, 2);
-    assertArgsMaxCount(args, 3);
-    assertString(args[1]);
+    assertArgsCount(1)
+    assertString(args[0]);
 
-    const needle = args[1];
+    const needle = args[0];
     let haystack = context.attributes;
     for (let i = 0; i < haystack.length; i++) {
       if (haystack[i].split('_')[1] === needle) {
