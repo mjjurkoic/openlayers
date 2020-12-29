@@ -1072,4 +1072,53 @@ describe('ol.style.expressions', function () {
       );
     });
   });
+
+  describe('length expression', function () {
+    let context;
+
+    beforeEach(function () {
+      context = {
+        variables: [],
+        attributes: [],
+        stringLiteralsMap: {},
+      };
+    });
+
+    it('correctly obtains the length of a string value', function () {
+      const expression = ['length', 'foo'];
+      expect(expressionToGlsl(context, expression)).to.eql('3.0');
+    });
+
+    it('correctly obtains the length of a number array given by an expression', function () {
+      const expression = ['length', ['array', 1, 2, 3, 4]];
+      expect(expressionToGlsl(context, expression)).to.eql('4.0');
+    });
+
+    it('correctly obtains the length of a pure number array', function () {
+      const expression = ['length', [1, 2, 3, 4, 5, 6]];
+      expect(expressionToGlsl(context, expression)).to.eql('6.0');
+    });
+
+    it('correctly throws an error if given an array of strings', function () {
+      const expression = ['length', ['foo', 'bar', 'baz']];
+      let thrown = false;
+      try {
+        expressionToGlsl(context, expression);
+      } catch (e) {
+        thrown = true;
+      }
+      expect(thrown).to.be(true);
+    });
+
+    it('correctly throws an error if given a number', function () {
+      const expression = ['length', 42];
+      let thrown = false;
+      try {
+        expressionToGlsl(context, expression);
+      } catch (e) {
+        thrown = true;
+      }
+      expect(thrown).to.be(true);
+    });
+  });
 });

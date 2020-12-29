@@ -786,3 +786,27 @@ Operators['case'] = {
     return result;
   },
 };
+Operators['length'] = {
+  getReturnType: function (args) {
+    return ValueTypes.NUMBER;
+  },
+  toGlsl: function (context, args) {
+    assertArgsCount(1);
+    let value;
+    if (getValueType(args[0]) & ValueTypes.STRING) {
+      value = /** @type {string} */ (args[0]);
+      return expressionToGlsl(context, value.length);
+    } else if (getValueType(args[0]) & ValueTypes.NUMBER_ARRAY) {
+      value = /** @type {Array<number|string>} */ (args[0]);
+      if (typeof value[0] === 'string') {
+        return `${expressionToGlsl(context, value.length - 1)}`;
+      } else {
+        return `${expressionToGlsl(context, value.length)}`;
+      }
+    } else {
+      throw new Error(
+        `Expected string or number array, received ${typeof args[0]}`
+      );
+    }
+  }
+}
